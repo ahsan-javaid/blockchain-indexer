@@ -1,0 +1,10 @@
+{
+  "name": "blockchain-indexer",
+  "version": "1.0.0",
+  "description": "A multi blockchain indexing service",
+  "main": "index.js",
+  "scripts": {
+  },
+  "author": "ahsan-javaid",
+  "license": "ISC"
+}
