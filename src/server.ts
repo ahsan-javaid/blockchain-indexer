@@ -1,1 +1,44 @@
-console.log("hello");
+import cluster from 'cluster';
+import { Modules } from './modules';
+// import { Worker } from './services/worker';
+import { P2P } from './services/p2p';
+import { Api } from './services/api';
+
+const services: Array<any> = [];
+
+const startCluster = async () => {
+  process.on('unhandledRejection', (error: any) => {
+    console.error('Unhandled Rejection at:', error.stack || error);
+    stop();
+  });
+  process.on('SIGTERM', stop);
+  process.on('SIGINT', stop);
+ 
+  if (cluster.isPrimary) {
+    console.log('primary');
+    services.push(P2P);
+    services.push(Api);
+   // services.push(Worker);
+  } else {
+    console.log('not primary');
+  }
+
+  // Load chain modules
+  Modules.loadConfigured();
+
+  for (const service of services) {
+    await service.start();
+  }
+};
+
+const stop = async () => {
+  console.log(`Shutting down ${process.pid}`);
+  for (const service of services.reverse()) {
+    await service.stop();
+  }
+  process.exit();
+};
+
+// Start all processes, api, workers, p2p, websockets, sync
+startCluster();
+
