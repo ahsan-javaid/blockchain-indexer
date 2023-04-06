@@ -1,6 +1,6 @@
 import { BaseP2PWorker } from '../../../services/p2p';
 import logger from '../../../logger';
-import { MultiThreadSync } from '../indexer/sync';
+import { MultiThreadSync } from './sync_worker/sync';
 import { ethers } from "ethers";
 import { EventEmitter } from 'events';
 import { Block } from '../../../models/Block';
@@ -171,7 +171,7 @@ export class ETHP2pWorker extends BaseP2PWorker {
 
     if (!this.initialSyncComplete) {
       // Start parallel syncing in worker threads
-      // return this.multiThreadSync.sync();
+       this.multiThreadSync.sync();
     }
 
     this.syncing = true;

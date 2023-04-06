@@ -20,6 +20,14 @@ const Config = function(): ConfigType {
             host: 'https://eth-goerli.public.blastapi.io',
           }
         }
+      },
+      GNOSIS: {
+        mainnet: {
+          chainSource: 'p2p',
+          rpc: {
+            host: 'https://rpc.gnosischain.com',
+          }
+        }
       }
     },
     modules: ['./eth'],
