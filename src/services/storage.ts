@@ -1,5 +1,7 @@
 import { Config, ConfigService } from './config';
 import { initBlockModel } from '../models/Block';
+import { initStateModel } from '../models/State';
+import { initTxModel } from '../models/Transaction';
 import { Sequelize } from 'sequelize';
 import mysql from 'mysql2/promise';
 
@@ -9,7 +11,6 @@ export class StorageService {
 
   constructor({ configService = Config } = {}) {
     this.configService = configService;
-   // this.connection.setMaxListeners(30);
   }
 
   async start() {
@@ -20,12 +21,19 @@ export class StorageService {
       user: this.configService.get().dbUser,
       password: this.configService.get().dbPass
     });
+    
+    // Create DB if not exists
     await connection.query(`CREATE DATABASE IF NOT EXISTS \`${this.configService.get().dbName}\`;`);
-
-
+    
+    // initilize sequelize
     this.sequelize = new Sequelize(this.configService.get().dbUrl);
-    // initilize block model
+    
+    // initilize models
     initBlockModel(this.sequelize);
+    initStateModel(this.sequelize);
+    initTxModel(this.sequelize);
+   
+    // Create DB Schema
     this.sequelize.sync();
   }
 

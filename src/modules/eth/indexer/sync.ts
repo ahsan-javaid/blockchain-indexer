@@ -14,6 +14,10 @@ export class MultiThreadSync extends EventEmitter {
   }
 
   async stop() {
-    
+
+  }
+
+  async sync() {
+
   }
 }

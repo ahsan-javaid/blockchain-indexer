@@ -4,6 +4,8 @@ import { MultiThreadSync } from '../indexer/sync';
 import { ethers } from "ethers";
 import { EventEmitter } from 'events';
 import { Block } from '../../../models/Block';
+import { Transaction } from '../../../models/Transaction';
+import { State } from '../../../models/State';
 import { wait } from '../../../utils/wait';
 
 export class ETHP2pWorker extends BaseP2PWorker {
@@ -127,6 +129,7 @@ export class ETHP2pWorker extends BaseP2PWorker {
 
   async processBlock(block: any) {
     try {
+      // Block
        await Block.upsert({
         id: block.number,
         chain: this.chain,
@@ -135,7 +138,26 @@ export class ETHP2pWorker extends BaseP2PWorker {
         hash: block.hash,
         nonce: block.nonce,
         timestamp: new Date(block.timestamp * 1000)
-      });
+       });
+      // Tx
+      for (const tx of block.transactions) {
+        await Transaction.upsert({
+          hash: tx.hash,
+          blockHash: tx.blockHash,
+          transactionIndex: tx.transactionIndex,
+          blockNumber: tx.blockNumber,
+          confirmations: tx.confirmations,
+          from: tx.from,
+          to: tx.to,
+          nonce: tx.nonce,
+          value: tx.value.toNumber(),
+          gasLimit: tx.gasLimit.toNumber(),
+          gasPrice: tx.gasPrice.toNumber(),
+          chain: this.chain,
+          network: this.network,
+          timestamp: new Date()
+         });
+      }
       logger.info(`Block processed on: ${this.chain}, ${this.network}`);
     } catch (e) {
       console.error('Failed to insert block:', e);
@@ -143,9 +165,82 @@ export class ETHP2pWorker extends BaseP2PWorker {
   }
 
   async sync() {
-    //setInterval(() => {
-    console.log('loop called');
-    //}, 100);
+    if (this.syncing) {
+      return false; // Case: Already syncing
+    }
+
+    if (!this.initialSyncComplete) {
+      // Start parallel syncing in worker threads
+      return this.multiThreadSync.sync();
+    }
+
+    this.syncing = true;
+    const [state] = await State.upsert({
+      chain: this.chain,
+      network: this.network,
+      initialSyncComplete: false,
+      height: 0,
+    });
+
+    if (state && state.chain == this.chain
+      && state.network == this.network
+      && state.initialSyncComplete) {
+      this.initialSyncComplete = true;
+    } else {
+      this.initialSyncComplete = false;
+    }
+
+    try {
+      let currentBlock = state.height;
+      let bestBlock = await this.provider.getBlockNumber();
+      
+      while (currentBlock <= bestBlock) {
+        logger.info(`Syncing... | Chain: ${this.chain} | Network: ${this.network}, at block: ${currentBlock}`)
+        const block = await this.getBlock(currentBlock);
+       
+        if (!block) {
+          // try again
+          await wait(1000);
+          continue;
+        }
+  
+        // Processs the block 
+        await this.processBlock(block);
+  
+        // Update best block ... definitely there will be new blocks
+        if (currentBlock === bestBlock) {
+          bestBlock = await this.provider.getBlockNumber();
+        }
+  
+        // move to next block
+        currentBlock++; 
+        // this is a new height now
+        state.height = currentBlock;
+        await state.save();
+      }
+    } catch (e) {
+      logger.error(`Error syncing ${this.chain} ${this.network} -- %o`, e);
+      await wait(2000);
+      this.syncing = false;
+      // Try sync again
+      return this.sync();
+    }
+    
+    // sync loop ended
+    logger.info(`${this.chain}:${this.network} up to date.`);
+    this.syncing = false;
+
+    // initial sync complete - update state
+    state.initialSyncComplete = true;
+    await state.save();
+
+    // notify sync done
+    this.events.emit('SYNCDONE');
+    return true;
+  }
+
+  async syncDone() {
+    return new Promise(resolve => this.events.once('SYNCDONE', resolve));
   }
 
   async stop() {
