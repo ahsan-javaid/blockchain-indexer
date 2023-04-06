@@ -246,6 +246,37 @@ export class ETHP2pWorker extends BaseP2PWorker {
     return true;
   }
 
+  async fillGaps() {
+    const oneSecond = 1000;
+    setInterval(async () => {
+      logger.info(`Checking gaps on chain ${this.chain}, ${this.network}`);
+
+      const networkInfo = await this.provider.getNetwork();
+      const state = await State.findOne({ where: { chainid: networkInfo.chainId } });
+      let bestBlock = await this.provider.getBlockNumber();
+      
+      while (state.height <= bestBlock) {
+        const block = await Block.findOne({
+          where: {
+            chain: this.chain,
+            network: this.network,
+            id: state.height
+          }
+        });
+
+        if (!block) { // Gap detected
+          logger.info(`Filling block ${state.height} on chain ${this.chain}, ${this.network}`);
+          // Get and save block
+          const fetched = await this.getBlock(state.height);
+          await this.processBlock(fetched);
+        }
+
+        state.height++;
+        await state.save();
+      }
+    }, oneSecond);
+  }
+
   async syncDone() {
     return new Promise(resolve => this.events.once('SYNCDONE', resolve));
   }
@@ -267,5 +298,10 @@ export class ETHP2pWorker extends BaseP2PWorker {
     await this.connect();
     // Start syncing rpc node
     this.sync();
+
+    // Once initial sync is done then start fill gaps routine
+    this.events.on('SYNCDONE', () => {
+      this.fillGaps();
+    })
   }
 }
