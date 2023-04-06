@@ -5,7 +5,7 @@ const main = async () => {
   let n = await provider.getBlockNumber();
 
   provider.getBlockWithTransactions(n).then(function (data) {
-    console.log(data.transactions[0].gasPrice.toNumber());
+    console.log(data.transactions[0].gasPrice.toBigInt());
   });
 }
 

@@ -1,7 +1,7 @@
 import { Sequelize, Model, DataTypes } from 'sequelize';
 
 export class State extends Model {
-  declare id: number;
+  declare chainid: number;
   declare chain: string;
   declare network: string;
   declare initialSyncComplete: boolean;
@@ -11,9 +11,8 @@ export class State extends Model {
 export const initStateModel = (sequelize: Sequelize) => {
   State.init(
     {
-      id: {
+      chainid: {
         type: DataTypes.INTEGER.UNSIGNED,
-        autoIncrement: true,
         primaryKey: true,
       },
       chain: {
@@ -30,12 +29,13 @@ export const initStateModel = (sequelize: Sequelize) => {
         defaultValue: false
       },
       height: {
-        type: new DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER.UNSIGNED,
         allowNull: true,
+        defaultValue: 0,
       },
     },
     {
-      tableName: 'blocks',
+      tableName: 'states',
       sequelize,
       timestamps: true,
       // passing the `sequelize` instance is required

@@ -19,16 +19,16 @@ export class ETHP2pWorker extends BaseP2PWorker {
 
   constructor({ chain, network, chainConfig, blockModel = {} }) {
     super({ chain, network, chainConfig, blockModel });
-    
+
     // Initilize chain config
     this.chain = chain || 'ETH';
     this.network = network;
     this.chainConfig = chainConfig;
-    
+
     // Connect to rpc provider
     this.provider = new ethers.providers.JsonRpcProvider(this.chainConfig.rpc.host);
     logger.info(`Ethers, subscription added to ${this.chain}, ${this.network}`);
-   
+
     // set sync state variables
     this.syncing = false;
     this.initialSyncComplete = false;
@@ -46,12 +46,12 @@ export class ETHP2pWorker extends BaseP2PWorker {
 
     this.events.on('connected', async () => {
       // Subscribe to new blocks
-       this.provider.on('block', async (height) => {
-        const block = this.getBlock(height)
+      this.provider.on('block', async (height) => {
+        const block = await this.getBlock(height);
         this.processBlock(block);
         this.events.emit('block', block);
         if (!this.syncing) {
-          this.sync();
+          // this.sync();
         }
       });
     });
@@ -93,19 +93,19 @@ export class ETHP2pWorker extends BaseP2PWorker {
         } catch (e) {
           connected = false;
         }
-        
+
         if (!connected) {
           this.events.emit('disconnected');
         } else if (disconnected || firstConnect) {
           this.events.emit('connected');
         }
-        
+
         if (disconnected && connected && !firstConnect) {
           logger.warn(
             `Reconnected to chain: ${this.chain} | Network: ${this.network}`
           );
         }
-        
+
         if (connected && firstConnect) {
           firstConnect = false;
           logger.info(
@@ -113,7 +113,7 @@ export class ETHP2pWorker extends BaseP2PWorker {
           );
         }
         disconnected = !connected;
-      } catch (e) {}
+      } catch (e) { }
       await wait(5000);
     }
   }
@@ -130,7 +130,7 @@ export class ETHP2pWorker extends BaseP2PWorker {
   async processBlock(block: any) {
     try {
       // Block
-       await Block.upsert({
+      await Block.upsert({
         id: block.number,
         chain: this.chain,
         network: this.network,
@@ -138,7 +138,7 @@ export class ETHP2pWorker extends BaseP2PWorker {
         hash: block.hash,
         nonce: block.nonce,
         timestamp: new Date(block.timestamp * 1000)
-       });
+      });
       // Tx
       for (const tx of block.transactions) {
         await Transaction.upsert({
@@ -150,13 +150,13 @@ export class ETHP2pWorker extends BaseP2PWorker {
           from: tx.from,
           to: tx.to,
           nonce: tx.nonce,
-          value: tx.value.toNumber(),
-          gasLimit: tx.gasLimit.toNumber(),
-          gasPrice: tx.gasPrice.toNumber(),
+          value: tx.value.to,
+          gasLimit: tx.gasLimit.toBigInt(),
+          gasPrice: tx.gasPrice.toBigInt(),
           chain: this.chain,
           network: this.network,
           timestamp: new Date()
-         });
+        });
       }
       logger.info(`Block processed on: ${this.chain}, ${this.network}`);
     } catch (e) {
@@ -171,16 +171,23 @@ export class ETHP2pWorker extends BaseP2PWorker {
 
     if (!this.initialSyncComplete) {
       // Start parallel syncing in worker threads
-      return this.multiThreadSync.sync();
+      // return this.multiThreadSync.sync();
     }
 
     this.syncing = true;
-    const [state] = await State.upsert({
-      chain: this.chain,
-      network: this.network,
-      initialSyncComplete: false,
-      height: 0,
-    });
+    const networkInfo = await this.provider.getNetwork();
+
+    let isExists = await State.findOne({ where: { chainid: networkInfo.chainId } });
+    
+    if (!isExists) {
+      await State.create({
+        chainid: networkInfo.chainId,
+        chain: this.chain,
+        network: this.network,
+      });
+    }
+
+    const state = await State.findOne({ where: { chainid: networkInfo.chainId } });
 
     if (state && state.chain == this.chain
       && state.network == this.network
@@ -193,27 +200,27 @@ export class ETHP2pWorker extends BaseP2PWorker {
     try {
       let currentBlock = state.height;
       let bestBlock = await this.provider.getBlockNumber();
-      
+
       while (currentBlock <= bestBlock) {
-        logger.info(`Syncing... | Chain: ${this.chain} | Network: ${this.network}, at block: ${currentBlock}`)
+        logger.info(`Syncing | block: ${currentBlock} | Chain: ${this.chain} | Network: ${this.network}`)
         const block = await this.getBlock(currentBlock);
-       
+
         if (!block) {
           // try again
           await wait(1000);
           continue;
         }
-  
+
         // Processs the block 
         await this.processBlock(block);
-  
+
         // Update best block ... definitely there will be new blocks
         if (currentBlock === bestBlock) {
           bestBlock = await this.provider.getBlockNumber();
         }
-  
+
         // move to next block
-        currentBlock++; 
+        currentBlock++;
         // this is a new height now
         state.height = currentBlock;
         await state.save();
@@ -225,7 +232,7 @@ export class ETHP2pWorker extends BaseP2PWorker {
       // Try sync again
       return this.sync();
     }
-    
+
     // sync loop ended
     logger.info(`${this.chain}:${this.network} up to date.`);
     this.syncing = false;
@@ -253,7 +260,7 @@ export class ETHP2pWorker extends BaseP2PWorker {
   async start() {
     // wait for provider network ready
     await this.provider.ready;
-    logger.info(`Started worker for chain ${this.chain} ${this.network}`);
+    logger.info(`Started... worker for chain ${this.chain} ${this.network}`);
     // Setup listners
     this.setupListeners();
     // Establilsh connection

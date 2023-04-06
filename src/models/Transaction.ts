@@ -46,12 +46,12 @@ export const initTxModel = (sequelize: Sequelize) => {
         allowNull: true,
       },
       from: { // Todo: Should have an index for quick reterival
-        type: new DataTypes.STRING(70), // Actual 42 len
+        type: new DataTypes.STRING(80), // Actual 42 len
         allowNull: false,
       },
-      to: { // Todo: Should have an index for quick reterival
-        type: new DataTypes.STRING(70), // Actual 42 len
-        allowNull: false,
+      to: {
+        type: new DataTypes.STRING(80), // Actual 42 len
+        allowNull: true,
       },
       gasPrice: {
         type: new DataTypes.BIGINT,
@@ -74,7 +74,7 @@ export const initTxModel = (sequelize: Sequelize) => {
         allowNull: false,
       },
       nonce: {
-        type: new DataTypes.NUMBER,
+        type: DataTypes.INTEGER.UNSIGNED,
         allowNull: true,
       },
       timestamp: {
