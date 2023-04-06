@@ -12,4 +12,8 @@ export class MultiThreadSync extends EventEmitter {
     this.network = network || 'mainnet';
     this.config = Config.chains[chain][network];
   }
+
+  async stop() {
+    
+  }
 }

@@ -3,6 +3,7 @@ import { Modules } from './modules';
 // import { Worker } from './services/worker';
 import { P2P } from './services/p2p';
 import { Api } from './services/api';
+import { Storage } from './services/storage';
 
 const services: Array<any> = [];
 
@@ -16,6 +17,7 @@ const startCluster = async () => {
  
   if (cluster.isPrimary) {
     console.log('primary');
+    services.push(Storage);
     services.push(P2P);
     services.push(Api);
    // services.push(Worker);
