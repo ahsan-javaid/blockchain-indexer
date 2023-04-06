@@ -2,7 +2,6 @@ import Logger from '../logger';
 import { Class } from '../types/Class';
 import { Api } from '../services/api';
 import { Config } from '../services/config';
-// import { Event } from '../services/event';
 import { P2P } from '../services/p2p';
 
 export interface IService {
@@ -21,7 +20,6 @@ export class BaseModule implements IService {
   ) {}
 
   async start() {
-    console.log('checkiiiiiiiiii');
     for (const service of this.internalServices) {
       await service.start();
     }
