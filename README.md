@@ -41,23 +41,85 @@ To start the server, run the following
 npm start
 ```
 
-## Documentation
-See the collection for documentation:
+## API Documentation
+Get txs for an address:
+#### URL Format
+```
+http://localhost:3000/api/<chainName>/<testnet|mainnet>/address/<address>/txs
+```
 
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://www.getpostman.com/collections/id)
+#### Example
+```
+http://localhost:3000/api/ETH/testnet/address/0xb733B99F0f9b690C47004A835CA25e32992194DF/txs
+```
+#### Example get sync status
+```
+http://localhost:3000
+```
 
+#### Example get block
+```
+http://localhost:3000/api/GNOSIS/mainnet/block/1000
+```
+
+#### Example get tokens information of an address
+```
+http://localhost:3000/api/ETH/testnet/address/0xb733B99F0f9b690C47004A835CA25e32992194DF/coins
+```
+## Adapter for transaction analyzers
+Adapter implementation is not concerete ... just sharing ideas
+- It could be exposed via websockets interface
+- External analyzer could register a callback to receive the tx or blocks
+- OR it could be a json rpc interface served over http 
 
 ## Architecture Diagram
-![Screenshot](docs/Architecure.png)
-
-## Flow Diagram
-![Screenshot](docs/Flow-Diagram.png)
+![Screenshot](docs/diagram.png)
 
 ## Database Design
--  This is relational database design 
-- Models are defined in src/models folder
-![Screenshot](docs/Database-Diagram.png)
+Design should be included but see src/models folder for now
 
-## Wiki of one complex feature
-- Read the detailed explanation of xyz feature 
-- Wiki link: https://github.com/ahsan-javaid/documentation/wiki
+## Directory structure
+```
+src 
+|____types
+| |____Class.ts
+| |____Config.ts
+| |____ChainNetwork.ts
+| |____Worker.ts
+|____utils
+| |____wait.ts
+|____models
+| |____State.ts
+| |____Block.ts
+| |____Transaction.ts
+|____logger.ts
+|____config.ts
+|____modules
+| |____eth
+| | |____p2p
+| | | |____p2p.ts
+| | | |____sync_worker
+| | | | |____syncWorker.ts
+| | | | |____sync.ts
+| | |____index.ts
+| |____index.ts
+|____server.ts  <--- Entry point
+|____routes
+| |____adapter
+| | |____index.ts
+| |____api
+| | |____block.ts
+| | |____transaction.ts
+| | |____address.ts
+| |____index.ts
+|____services
+| |____storage.ts
+| |____api.ts
+| |____p2p.ts
+| |____config.ts
+| |____worker.ts
+```
+
+## See NOTES.md
+- See NOTES.md file for more information
+- See comments in code for more understanding
