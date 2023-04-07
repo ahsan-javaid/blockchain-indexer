@@ -3,7 +3,6 @@ import { ConfigType } from './types/Config';
 
 const Config = function(): ConfigType {
   const config: ConfigType = {
-    maxPoolSize: 50,
     port: 3000,
     dbUrl: process.env.DB_URL || 'mysql://root:12345678@localhost:3306/indexer',
     dbHost: process.env.DB_HOST || '127.0.0.1',
@@ -15,7 +14,6 @@ const Config = function(): ConfigType {
     chains: {
       ETH: {
         testnet: {
-          chainSource: 'p2p',
           rpc: {
             host: 'https://eth-goerli.public.blastapi.io',
           }
@@ -23,24 +21,13 @@ const Config = function(): ConfigType {
       },
       GNOSIS: {
         mainnet: {
-          chainSource: 'p2p',
           rpc: {
             host: 'https://rpc.gnosischain.com',
           }
         }
       }
     },
-    modules: ['./eth'],
-    services: {
-      api: {
-      },
-      event: {
-      },
-      p2p: {},
-      socket: {
-      },
-      storage: {}
-    }
+    modules: ['./eth']
   };
   return config;
 };
