@@ -3,29 +3,13 @@ export interface IChainConfig<T extends INetworkConfig> {
 }
 
 interface INetworkConfig {
-  chainSource?: 'p2p';
-  forkHeight?: number;
+  height?: number; // In case if you want to sync from specific height
 }
 
-export interface IUtxoNetworkConfig extends INetworkConfig {
+export interface IEVMNetworkConfig extends INetworkConfig {
   rpc: {
     host: string;
   };
-}
-
-interface IProvider {
-  host: string;
-  port?: number | string;
-  protocol: 'http' | 'https' | 'ws' | 'wss' | 'ipc';
-  options?: object;
-}
-
-export interface IXrpNetworkConfig extends INetworkConfig {
-  provider: IProvider & {
-    dataHost: string;
-  };
-  startHeight: number;
-  walletOnlySync: boolean;
 }
 
 export interface ConfigType {
@@ -37,9 +21,8 @@ export interface ConfigType {
   dbUser: string;
   dbPass: string;
   numWorkers: number;
-
   chains: {
-    [currency: string]: IChainConfig<IUtxoNetworkConfig | IXrpNetworkConfig>;
+    [currency: string]: IChainConfig<IEVMNetworkConfig>;
   };
   modules?: string[];
 }

@@ -36,11 +36,9 @@ export class StorageService {
       initBlockModel(this.sequelize);
       initStateModel(this.sequelize);
       initTxModel(this.sequelize);
-      console.log('sync done');
       // Create DB Schema
       this.sequelize.sync();
     } catch (e) {
-      console.log('yes here: ',e);
       logger.error(e);
     }
   }
@@ -49,6 +47,5 @@ export class StorageService {
     // Todo: //
   }
 }
-
 
 export let Storage = new StorageService();

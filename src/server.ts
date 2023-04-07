@@ -1,6 +1,6 @@
 import cluster from 'cluster';
 import { Modules } from './modules';
-// import { Worker } from './services/worker';
+import { Worker } from './services/worker';
 import { P2P } from './services/p2p';
 import { Api } from './services/api';
 import { Storage } from './services/storage';
@@ -16,13 +16,11 @@ const startCluster = async () => {
   process.on('SIGINT', stop);
  
   if (cluster.isPrimary) {
-    console.log('primary');
     services.push(Storage);
     services.push(P2P);
-    services.push(Api);
-   // services.push(Worker);
+    services.push(Worker);
   } else {
-    console.log('not primary');
+    services.push(Api); // Run api on workers ... just for little scalability
   }
 
   // Load chain modules

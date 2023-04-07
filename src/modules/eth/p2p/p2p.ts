@@ -17,8 +17,8 @@ export class ETHP2pWorker extends BaseP2PWorker {
   public disconnecting: boolean;
   public events: EventEmitter;
 
-  constructor({ chain, network, chainConfig, blockModel = {} }) {
-    super({ chain, network, chainConfig, blockModel });
+  constructor({ chain, network, chainConfig }) {
+    super({ chain, network, chainConfig });
 
     // Initilize chain config
     this.chain = chain || 'ETH';
@@ -50,9 +50,6 @@ export class ETHP2pWorker extends BaseP2PWorker {
         const block = await this.getBlock(height);
         this.processBlock(block);
         this.events.emit('block', block);
-        if (!this.syncing) {
-          // this.sync();
-        }
       });
     });
 
@@ -176,18 +173,16 @@ export class ETHP2pWorker extends BaseP2PWorker {
 
     this.syncing = true;
     const networkInfo = await this.provider.getNetwork();
-
-    let isExists = await State.findOne({ where: { chainid: networkInfo.chainId } });
-    
-    if (!isExists) {
-      await State.create({
+    const [state] = await State.findOrCreate({
+      where: { chainid: networkInfo.chainId },
+      defaults: {
         chainid: networkInfo.chainId,
         chain: this.chain,
         network: this.network,
-      });
-    }
-
-    const state = await State.findOne({ where: { chainid: networkInfo.chainId } });
+        initialSyncComplete: false,
+        height: 0
+      }
+    });
 
     if (state && state.chain == this.chain
       && state.network == this.network

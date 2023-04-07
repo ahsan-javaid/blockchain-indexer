@@ -1,7 +1,11 @@
 import { cpus } from 'os';
 import { ConfigType } from './types/Config';
 
-const Config = function(): ConfigType {
+const Config = function (): ConfigType {
+  /*
+   * Todo: Load env variable using dotenv
+   *
+   */
   const config: ConfigType = {
     port: 3000,
     dbUrl: process.env.DB_URL || 'mysql://root:12345678@localhost:3306/indexer',
