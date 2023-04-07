@@ -1,7 +1,7 @@
 ### Approach used to sync blockchain
 - State of each chain is maintained in state table
 
-#### Subscribe to new blocks / tx
+#### Subscribe to new blocks / transactions
 When process starts 
 - Subscription added to listen new blocks
 - Sync starts from 0 if not already synced
@@ -9,9 +9,9 @@ When process starts
 #### Sync Algorithm
 ```
 Loop
-- start from block 0....latest block
+- Start from block 0....latest block
 - Get the block via rpc call
-- save block and tx in db
+- Save block and tx in db
 - Update state with sync block height (handled scenario if process crashed or stopped because state is maintained)
 - Stop if no more blocks found
 - Initial sync complete 
@@ -22,7 +22,7 @@ Loop
 - Check state from db and latest block
 - Difference found
 Loop
-- start from block x in state....latest block
+- Start from block x in state....latest block
 - Get the block via rpc call
 - save block and tx in db
 - Update state with sync block height (handled scenario if process crashed or stopped because state is maintained)
