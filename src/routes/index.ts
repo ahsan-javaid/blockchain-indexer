@@ -1,6 +1,8 @@
 import cors from 'cors';
 import fs from 'fs';
 import express from 'express';
+import { Web3Adapter } from './adapter';
+import { State } from '../models/State';
 
 const app = express();
 
@@ -25,5 +27,12 @@ function bootstrap(path?: string) {
 }
 
 app.use('/api/:chain/:network', bootstrap('api'));
+app.use('/web3/:chain/:network', Web3Adapter);
+
+// Return status of api or indexer
+app.get('/*', async (_req, res) => {
+  const data = await State.findAll();
+  res.json({ data });
+});
 
 export default app;
