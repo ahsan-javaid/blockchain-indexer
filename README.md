@@ -33,6 +33,11 @@ DB_PASS=doe
 ```
 Note: Dotenv is not added so modify the default values in src/config.ts or set env varibles from terminal before running npm start command
 
+## Chain config
+- See src/config.ts for chain config
+- Feel free to add more EVM compatible chains
+- Currently src/config.ts includes ETH and GNOSIS chains
+
 ## Running on local
 
 To start the server, run the following
