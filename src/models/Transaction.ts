@@ -22,7 +22,7 @@ export class Transaction extends Model {
   declare timestamp: Date | null;
 }
 
-export const initTxModel = (sequelize: Sequelize) => {
+export const init = (sequelize: Sequelize) => {
   Transaction.init(
     {
       hash: {

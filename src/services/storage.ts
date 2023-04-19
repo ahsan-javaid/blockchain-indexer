@@ -1,7 +1,5 @@
 import { Config, ConfigService } from './config';
-import { initBlockModel } from '../models/Block';
-import { initStateModel } from '../models/State';
-import { initTxModel } from '../models/Transaction';
+import { initModels } from '../models';
 import { Sequelize } from 'sequelize';
 import mysql from 'mysql2/promise';
 import logger from '../logger';
@@ -32,10 +30,8 @@ export class StorageService {
         logging: false
       });
 
-      // initilize models
-      initBlockModel(this.sequelize);
-      initStateModel(this.sequelize);
-      initTxModel(this.sequelize);
+      // Init db models
+      initModels(this.sequelize);
       // Create DB Schema
       this.sequelize.sync();
     } catch (e) {

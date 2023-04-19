@@ -8,7 +8,7 @@ export class State extends Model {
   declare height: number | null;
 }
 
-export const initStateModel = (sequelize: Sequelize) => {
+export const init = (sequelize: Sequelize) => {
   State.init(
     {
       chainid: {

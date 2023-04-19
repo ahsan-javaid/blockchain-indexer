@@ -10,7 +10,7 @@ export class Block extends Model {
   declare timestamp: Date | null;
 }
 
-export const initBlockModel = (sequelize: Sequelize) => {
+export const init = (sequelize: Sequelize) => {
   Block.init(
     {
       id: { // Actually its block height
