@@ -31,7 +31,18 @@ DB_PORT=3306
 DB_USER=john
 DB_PASS=doe
 ```
-Note: Dotenv is not added so modify the default values in src/config.ts or set env varibles from terminal before running npm start command
+
+## Running the project
+```
+npm run start 
+```
+
+Run with docker
+
+```
+docker compose up
+```
+
 
 ## Chain config
 - See src/config.ts for chain config
