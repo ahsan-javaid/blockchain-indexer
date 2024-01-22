@@ -2,7 +2,7 @@
 A proof of concept (POC) implementation of multichain indexer for ethereum based chains and layer 2 solutions
 
 ## Description
-- Scans multiple ethereum based chains
+- Scans multiple ethereum based chains and layer 2 blockchain nodes
 - Provides api's to fetch tx history of address across multiple chains
 - Exposes adapter to publish transaction details
 
