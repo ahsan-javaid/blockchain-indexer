@@ -13,7 +13,7 @@ export class MultiThreadSync extends EventEmitter {
     this.config = Config.chains[chain][network];
   }
 
-  start() { }
+  start() {}
   
   stop() {}
 
