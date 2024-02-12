@@ -8,6 +8,7 @@ A proof of concept (POC) implementation of multichain indexer for ethereum based
 
 ## System Requirements
 
+* Built on node version: v20.9.0
 * [NodeJS LTS version](https://nodejs.org/en/download)
 * [MySql](https://www.mongodb.com/try/download/community)
 
