@@ -1,5 +1,6 @@
 ## Blockchain indexer & api service
-A proof of concept (POC) implementation of multichain indexer for ethereum based chains and layer 2 solutions
+A proof of concept (POC) implementation of multichain indexer for ethereum based chains and layer 2 solutions.
+![Screenshot](docs/blockbook.png)
 
 ## Description
 - Scans multiple ethereum based chains and layer 2 blockchain nodes
