@@ -141,3 +141,6 @@ src
 ## See NOTES.md
 - See NOTES.md file for more information
 - See comments in code for more understanding
+
+## Contributions
+Contribute to blockchain indexer by opening a pull request. See contributions.md for more details.
