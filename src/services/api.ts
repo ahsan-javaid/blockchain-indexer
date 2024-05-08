@@ -26,7 +26,7 @@ export class ApiService {
       this.httpServer = new http.Server(app);
       this.httpServer.timeout = this.timeout;
       this.httpServer.listen(this.port, () => {
-        logger.info(`Starting API Service on port ${this.port}`);
+        logger.info(`Starting API Service on port: ${this.port}`);
       });
     }
     return this.httpServer;
