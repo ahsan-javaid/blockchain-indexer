@@ -279,14 +279,14 @@ export class ETHP2pWorker extends BaseP2PWorker {
   async stop() {
     this.stopping = true;
     this.multiThreadSync.stop();
-    logger.info(`Stopping worker for chain ${this.chain} ${this.network}`);
+    logger.info(`Stopping worker for chain ${this.chain}, ${this.network}`);
     await this.disconnect();
   }
 
   async start() {
     // wait for provider network ready
     await this.provider.ready;
-    logger.info(`Started... worker for chain ${this.chain} ${this.network}`);
+    logger.info(`Started... worker for chain ${this.chain}, ${this.network}`);
     // Setup listners
     this.setupListeners();
     // Establilsh connection
