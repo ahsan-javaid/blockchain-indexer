@@ -1,6 +1,6 @@
 {
   "name": "blockchain-indexer",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "A multichain indexing service for blockchain nodes.",
   "main": "src/server.ts",
   "engines": {
