@@ -59,7 +59,7 @@ class ModuleManager extends BaseModule {
     for (const chain in chains) {
       const modulePath = this.KNOWN_MODULE_PATHS[chain];
       if (!modulePath) {
-        Logger.warn(`Module not found for chain ${chain}`);
+        Logger.warn(`Module not found for chain: ${chain}`);
         continue;
       }
     }
