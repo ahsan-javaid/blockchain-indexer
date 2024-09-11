@@ -20,7 +20,7 @@ export class WorkerService extends EventEmitter {
       });
       for (let worker = 0; worker < config.numWorkers; worker++) {
           let newWorker = cluster.fork();
-          logger.info(`Starting worker number ${worker}`);
+          logger.info(`Starting worker number: ${worker}`);
           newWorker.on('message', (msg: any) => {
             this.emit(msg.id, msg);
           });
