@@ -9,3 +9,5 @@ src/vendor
 src/dist
 build/
 deploy.sh
+version.js
+test.js 

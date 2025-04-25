@@ -145,5 +145,5 @@ src
 ## Contributions
 Contribute to blockchain indexer by opening a pull request. See contributions.md for more details.
 
-#####
+##### Last updated
 Last updated: 10 June, 2025
